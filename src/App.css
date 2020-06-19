@@ -1,0 +1,200 @@
+.App {
+  text-align: center;
+  margin: 0 30px 0 30px;
+}
+
+.App-logo {
+  height: 40vmin;
+}
+
+.App-header {
+  background-color: #ffffff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: black;
+}
+
+.App-link {
+  color: #09d3ac;
+}
+
+.header {
+  font-size: 72px;
+  font-weight: 700;
+  margin-top: 200px;
+}
+
+.beginButton {
+  width: 120px;
+  height: 35px;
+  background-color: #418043;
+  color: white;
+  border-radius: 5%;
+  border: 0px;
+  margin-top: 40px;
+
+  
+}
+
+.gameHeader {
+  background-color: #7171da;
+  height: 250px;
+  color: #ffffff;
+  font-size: 50px;
+  font-weight: 600;
+  padding: 78px;
+}
+
+.historyHeader {
+  font-size: 20px;
+  font-weight: bolder;
+  float: left;
+  width: 100%;
+  text-align: left;
+}
+
+.game-board {
+  margin-top: 40px;
+}
+.history-board {
+  margin-top: 40px;
+}
+
+.squareButton {
+  width: 140px;
+  height: 140px;
+  margin: 0px 0px 10px 10px;
+  background: #ffffff;
+  border: 2px solid #8c7a7ac2;
+  border-radius: 5%;
+  margin-top: 20px;
+  color: white;
+  font-size: 60px;
+  font-weight: bolder;
+
+}
+
+.board-row {
+  margin-top: -20px;
+}
+
+.board-all {
+    text-align: right;
+    /* float: right; */
+    border-right: 2px solid #ddd;
+    padding-right: 15px;
+}
+
+.xValue {
+  background-color: red;
+}
+.oValue {
+  background-color: green;
+}
+
+.noTurnsMade {
+  float: left;
+  text-align: left;
+  width: 100%;
+  margin-left: -15px;
+}
+
+.turnsMade {
+  float: left;
+  text-align: left;
+  width: 100%;
+  margin-left: -15px;
+  height: 44px;
+  padding: 10px 10px 0px 0px;
+  border-bottom: 1px solid #ddd;
+  font-size: 13px;
+}
+
+.undoBtn {
+  width: 59px;
+  padding: 2px;
+  float: right;
+
+}
+
+.turn-row {
+  padding-left: 0px;
+}
+
+@media only  screen and (max-width: 400px){
+  .squareButton {
+    width: 40px !important;
+    height: 40px !important;
+    margin: 0px 0px 10px 10px;
+    background: #ffffff;
+    border: 2px solid #8c7a7ac2;
+    border-radius: 5%;
+    margin-top: 20px;
+    color: white;
+    font-size: 15px;
+    font-weight: bolder;
+  }
+  .xValue {
+    background-color: red;
+  }
+  .oValue {
+    background-color: green;
+  }
+  .gameHeader {
+    height: 65px !important;
+    font-size: 15px !important;
+    font-weight: 500;
+    padding: 20px !important;
+  }
+}
+
+@media  only screen and  (max-width: 600px){
+  .squareButton {
+    height: 90px;
+    width: 90px;
+  }
+
+  .gameHeader {
+    height: 120px;
+    font-size: 20px;
+    font-weight: 500;
+    padding: 30px;
+  }
+}
+
+@media only screen and  (max-width: 991px){
+  .history-board {
+   float: center; 
+  }
+
+  .board-all {
+    text-align: center;
+  }
+
+  .gameHeader {
+    height: 150px;
+    font-size: 30px;
+    font-weight: 500;
+    padding: 50px;
+  }
+
+  .board-all {
+    border: none
+  }
+  .historyHeader {
+    border-top: 2px solid #ddd;
+  }
+
+}
+@media only screen and  (max-width: 1388px){
+  .turnsMade {
+    height: 50px;
+  }
+  .undoBtn {
+    float: none;
+}
+}
