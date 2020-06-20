@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Board from './Board';
 import History from './History';
-import { toggleNextPlayer, addSelectedFieldToStore, updateHistory, addWinner } from '../actions/actionCreators';
+import { toggleNextPlayer, addSelectedFieldToStore, updateHistory, addResult } from '../actions/actionCreators';
 import { setToLocalStorage, getFromLocalStorage } from '../storage';
 
 const solutions=[
@@ -28,10 +28,12 @@ class GameComponent extends Component {
     }
 
     componentDidMount() {
-        const {dispatch} = this.props
-        dispatch(toggleNextPlayer(getFromLocalStorage('oIsNext')));
-        dispatch(updateHistory(getFromLocalStorage('history')))
-        dispatch(addSelectedFieldToStore(getFromLocalStorage('selectedFields')))
+        const { toggleNextPlayer, updateHistory, addSelectedFieldToStore } = this.props
+        // in case of page refresh
+        // get data from local storage
+        if(getFromLocalStorage('oIsNext')) toggleNextPlayer(getFromLocalStorage('oIsNext'))
+        updateHistory(getFromLocalStorage('history'))
+        addSelectedFieldToStore(getFromLocalStorage('selectedFields'))
     }
 
     componentWillUnmount() {
@@ -39,79 +41,90 @@ class GameComponent extends Component {
     }
 
     onPlayerMove = (i) => {
-        const {dispatch, oIsNext, history} = this.props
+        const { oIsNext, history, toggleNextPlayer, updateHistory, addSelectedFieldToStore } = this.props
         let disabledSquares = []
         let currentHistory = history ? [...history] : []
         let xSquares = []
         let oSquares = []
-        
-        dispatch(toggleNextPlayer(!oIsNext))
+        // change players turn
+        toggleNextPlayer(!oIsNext)
         currentHistory.push({
             player: oIsNext ? 1 : 0,
             square: i
         })
-        dispatch(updateHistory(currentHistory))
-    currentHistory.map(el => {
-        el.player == 1 
-        ? xSquares.push(el.square)
-        : oSquares.push(el.square);
-        disabledSquares.push(el.square)
-    })
+        // add move to history tab
+        updateHistory(currentHistory)
+        currentHistory.map(el => {
+            el.player == 1 
+            ? xSquares.push(el.square)
+            : oSquares.push(el.square);
+            disabledSquares.push(el.square)
+        })
         let newMap = currentHistory.reduce(function(map, obj) {
             map[obj.square] = obj.player;
             return map;
         }, {});
-        dispatch(addSelectedFieldToStore(newMap))
+        // add selected field to store
+        addSelectedFieldToStore(newMap)
           this.setState({
               clicked: true,
               disabledSquares: disabledSquares
         })
         let localStorageObject = {
             history: JSON.stringify(currentHistory),
-            oIsNext: oIsNext,
+            oIsNext: !oIsNext,
             selectedFields: JSON.stringify(newMap)
         }
+        // update local storage
         setToLocalStorage(localStorageObject)
-        getFromLocalStorage('history')
+        // check if we have a winner 
         this.checkWinner(xSquares, oSquares)
     }
 
     checkWinner(xSquares, oSquares) {
-        let winner
+        const { updateHistory, addResult } = this.props
+        let result
         for(let i=0; i<solutions.length; i++) {
+            // check is x winner
             if(xSquares.includes(solutions[i][0]) && xSquares.includes(solutions[i][1]) && xSquares.includes(solutions[i][2])) {
-                winner = {
+                result = {
                     winner: 'X',
                     looser: 'O'
                 }
             }
+            // check is o winner
             if(oSquares.sort().includes(solutions[i][0]) && oSquares.sort().includes(solutions[i][1]) && oSquares.sort().includes(solutions[i][2])) {
-                winner = {
+                result = {
                     winner: 'O',
                     looser: 'X'
                 }
             }
         }
-        if(xSquares.length + oSquares.length == 9 && !winner) {
-            winner = {
+        // check if it's a tie
+        if(xSquares.length + oSquares.length == 9 && !result) {
+            result = {
                 tie: 'It\'s a tie'
             }
         }
-        if(winner) {
-            this.props.dispatch(updateHistory([]))
-            this.props.dispatch(addWinner(winner))
+        // if we have winner or it's a tie
+        // reset history and declare the winner 
+        if(result) {
+            updateHistory([])
+            addResult(result)
         }
     }
 
     onUndo = (values) => {
-        const {dispatch, history, oIsNext} = this.props
+        const { history, oIsNext, toggleNextPlayer, updateHistory, addSelectedFieldToStore } = this.props
         let disabledSquares = []
         let currentHistory = history ? [...history] : []
 
-        dispatch(toggleNextPlayer(!oIsNext))
-
+        // reset player turn
+        toggleNextPlayer(!oIsNext)
+        // remove last move from history
         currentHistory.splice(history.length-1, 1)
-        dispatch(updateHistory(currentHistory))
+        updateHistory(currentHistory)
+
         currentHistory.map(el => 
             disabledSquares.push(el.square)
         )
@@ -119,13 +132,15 @@ class GameComponent extends Component {
             map[obj.square] = obj.player;
             return map;
         }, {});
-        dispatch(addSelectedFieldToStore(newMap))
+        addSelectedFieldToStore(newMap)
+        // update disabled buttons
         this.setState({ disabledSquares: disabledSquares })
         let localStorageObject = {
             history: JSON.stringify(currentHistory),
             oIsNext: oIsNext,
             selectedFields: JSON.stringify(newMap)
         }
+        // update local storage
         setToLocalStorage(localStorageObject)
     }
 
@@ -158,7 +173,16 @@ class GameComponent extends Component {
     }
 }
 
-function mapStateToProps(state) {
+const mapDispatchToProps = dispatch => {
+    return {
+        updateHistory: history => dispatch(updateHistory(history)),
+        addResult: result => dispatch(addResult(result)),
+        toggleNextPlayer: oIsNext => dispatch(toggleNextPlayer(oIsNext)),
+        addSelectedFieldToStore: field => dispatch(addSelectedFieldToStore(field))
+    }
+}
+
+const mapStateToProps = state => {
     return {
         oIsNext: state.oIsNext,
         history: state.history
@@ -166,4 +190,5 @@ function mapStateToProps(state) {
 }
 export default connect(
     mapStateToProps,
+    mapDispatchToProps
 )(GameComponent);

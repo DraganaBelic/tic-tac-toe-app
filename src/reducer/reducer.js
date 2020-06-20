@@ -1,4 +1,4 @@
-import { TOGGLE_NEXT_PLAYER, ADD_SELECTED_FIELD, UPDATE_HISTORY, ADD_WINNER } from "../actions/actionType";
+import { TOGGLE_NEXT_PLAYER, ADD_SELECTED_FIELD, UPDATE_HISTORY, ADD_RESULT } from "../actions/actionType";
 
 const reducer = (store = {}, action) => {
 
@@ -15,9 +15,9 @@ const reducer = (store = {}, action) => {
             let history = action.history
             return {...store, history}
         break
-        case ADD_WINNER:
-            let winner = action.winner
-            return {...store, winner}
+        case ADD_RESULT:
+            let result = action.result
+            return {...store, result}
         break
 
             default:

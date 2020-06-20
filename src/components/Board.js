@@ -3,8 +3,6 @@ import { connect } from 'react-redux';
 import Square from './Square';
 import { updateHistory } from '../actions/actionCreators';
 
-
-
 class Board extends Component {
 
     constructor(props) {
@@ -12,11 +10,13 @@ class Board extends Component {
         this.renderBoard = this.renderBoard.bind(this)
 
     }
+
     componentDidUpdate(prevProps, prevState) {
+        const { updateHistory, history } = this.props
         if (this.props !== prevProps) {
-          this.props.dispatch(updateHistory(this.props.history));
+            updateHistory(history)
         }
-      }
+    }
 
     renderBoard(row, col) {
         let board = [];
@@ -40,8 +40,8 @@ class Board extends Component {
     } 
 
     renderSquare = (i) => {
-        const {oIsNext, selectedField} = this.props
-        let squareValue = this.props.oIsNext ? 'O' : 'X'
+        const {oIsNext, selectedField, onSquareClicked, disabledSquares} = this.props
+        let squareValue = oIsNext ? 'O' : 'X'
         let pickedValues = selectedField ? selectedField : {}
         let value = pickedValues[i]
         return <Square 
@@ -49,8 +49,8 @@ class Board extends Component {
                 squareIndex={i}
                 squareValue={squareValue}
                 value={value}
-                onSquareClicked={()=>{this.props.onSquareClicked(i)}}
-                disabledSquares = {this.props.disabledSquares}
+                onSquareClicked={()=>{onSquareClicked(i)}}
+                disabledSquares = {disabledSquares}
                 />
     }
     render() {
@@ -62,7 +62,13 @@ class Board extends Component {
     }
 }
 
-function mapStateToProps(state) {
+const mapDispatchToProps = dispatch => {
+    return {
+        updateHistory: (history) => dispatch(updateHistory(history))
+    }
+}
+
+const mapStateToProps = state => {
     return {
         oIsNext: state.oIsNext,
         selectedField: state.selectedField
@@ -70,4 +76,5 @@ function mapStateToProps(state) {
 }
 export default connect(
     mapStateToProps,
+    mapDispatchToProps
 )(Board);
